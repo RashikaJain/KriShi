@@ -8,8 +8,7 @@ export const addItem = async (req, res) => {
         let image;
 
         if (req.file) {
-            console.log(req.file)
-            image = await uploadOnCloudinary(req.file.path)
+            image = await uploadOnCloudinary(req.file.path);
         }
 
         const shop = await Shop.findOne({ owner: req.userId });
@@ -19,20 +18,33 @@ export const addItem = async (req, res) => {
         }
 
         const item = await Item.create({
-            name, category, foodType, price, image, shop: shop._id
-        })
+            name,
+            category,
+            foodType,
+            price,
+            image,
+            shop: shop._id,
+        });
 
-        
+        // Only update items array
+        await Shop.findByIdAndUpdate(
+            shop._id,
+            { $push: { items: item._id } },
+            { new: true }
+        );
 
-        // await Item.populate("shop");
-        return res.status(200).json(shop);
+        const updatedShop = await Shop.findById(shop._id).populate("owner items");
+
+        return res.status(200).json(updatedShop);
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            message: `Add item error : ${error}`
+            message: `Add item error : ${error}`,
         });
     }
-}
+};
+
+
 
 export const editItem = async (req, res) => {
     try {
