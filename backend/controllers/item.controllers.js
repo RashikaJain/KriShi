@@ -2,61 +2,59 @@ import Item from "../models/item.model.js"
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import Shop from "../models/shop.model.js";
 
-export const addItem  = async (req,res)=>{
-    try{
-        const {name,category,foodType,price} = req.body;
+export const addItem = async (req, res) => {
+    try {
+        const { name, category, foodType, price } = req.body;
         let image;
 
-        if(req.file)
-        {
+        if (req.file) {
+            console.log(req.file)
             image = await uploadOnCloudinary(req.file.path)
         }
 
-        const shop = await Shop.findOne({owner: req.userId});
+        const shop = await Shop.findOne({ owner: req.userId });
 
-        if(!shop)
-        {
-            return res.status(400).json({message:"shop not found"});
+        if (!shop) {
+            return res.status(400).json({ message: "shop not found" });
         }
 
         const item = await Item.create({
-            name,category,foodType,price,image,shop:shop._id
+            name, category, foodType, price, image, shop: shop._id
         })
 
+        
+
         // await Item.populate("shop");
-        return res.status(200).json(item);
-    }catch(error)
-    {
+        return res.status(200).json(shop);
+    } catch (error) {
+        console.log(error);
         return res.status(500).json({
-            messsage: `Add item error : ${error}`   
+            message: `Add item error : ${error}`
         });
     }
 }
 
-export const editItem = async (req,res)=>{
-    try{
+export const editItem = async (req, res) => {
+    try {
         const itemId = req.params.itemId
-        const {name,category,foodType,price} = req.body;
+        const { name, category, foodType, price } = req.body;
         let image;
-        if(req.file)
-        {
+        if (req.file) {
             image = await uploadOnCloudinary(req.file.path);
         }
 
-        const item = await Item.findByIdAndUpdate(itemId,{
-            name,category,foodType,price,image
-        },{new:true});
+        const item = await Item.findByIdAndUpdate(itemId, {
+            name, category, foodType, price, image
+        }, { new: true });
 
-        if(!item)
-        {
+        if (!item) {
             return res.status(400).json({
                 message: `Item not found`
             })
         }
 
         return res.status(200).json(item);
-    }catch(error)
-    {
+    } catch (error) {
         return res.status(500).json({
             message: `edit item error : ${error}`
         })

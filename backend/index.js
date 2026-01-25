@@ -1,6 +1,6 @@
 import express from "express"
 import dotenv from "dotenv"
-import connectDB from "./config/db.js";    
+import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors"
 import authRouter from "./routes/auth.routes.js";
@@ -18,7 +18,7 @@ const app = express();
 
 // cors and configuration
 
-app.use(express.json()) // to convert data to jsonf
+app.use(express.json())
 app.use(cookieParser())
 app.use(cors(
     {
@@ -29,12 +29,12 @@ app.use(cors(
 
 
 // to call routes
-app.use("/api/auth",authRouter);
-app.use("/api/user",userRouter)
-app.use("/api/shop",shopRouter)
-app.use("/api/item",itemRouter)
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter)
+app.use("/api/shop", shopRouter)
+app.use("/api/item", itemRouter)
 
-app.listen(port,()=>{
+app.listen(port, () => {
     connectDB();
     console.log(`server is listening on http/localhost:${port}`);
 })

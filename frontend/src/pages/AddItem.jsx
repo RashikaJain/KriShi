@@ -7,22 +7,21 @@ import axios from "axios"
 import { serverUrl } from "../App"
 import { setMyShopData } from '../redux/ownerSlice';
 
-function CreateEditShop() {
+function AddItem() {
     const navigate = useNavigate();
     const { myShopData } = useSelector(state => state.owner);
-    const { currentCity, currentState, currentAddress } = useSelector(state => state.user);
-
-    const [name, setName] = useState(myShopData?.name || "");
-    const [address, setAddress] = useState(myShopData?.address || currentAddress);
-    const [city, setCity] = useState(myShopData?.city || currentCity);
-    const [state, setState] = useState(myShopData?.state || currentState);
-    const [frontendImage, setFrontendImage] = useState(myShopData?.image || null)
+    const [name, setName] = useState("");
+    const [price, setPrice] = useState(0)
+    const categories = ["Snacks", "Main Course", "Deserts", "Pizza", "Burgers", "Sandwiches", "South Indian", "North Indian", "Chinese", "Fast Food", "Others"]
+    const [category, setCategory] = useState("");
+    const [foodType, setFoodType] = useState("veg");
+    const [frontendImage, setFrontendImage] = useState(null)
     const [backendImage, setBackendImage] = useState(null);
     const dispatch = useDispatch();
 
     const handleImage = (e) => {
         const file = e.target.files[0];
-        console.log(file);
+        console.log("file: ", file);
         setBackendImage(file);
         setFrontendImage(URL.createObjectURL(file));
     }
@@ -32,16 +31,21 @@ function CreateEditShop() {
         try {
             const formData = new FormData();
             formData.append("name", name);
-            formData.append("city", city);
-            formData.append("state", state);
-            formData.append("address", address);
+            formData.append("category", category);
+            formData.append("foodType", foodType);
+            formData.append("price", price);
+
             if (backendImage) {
                 formData.append("image", backendImage);
             }
 
-            const result = await axios.post(`${serverUrl}/api/shop/create-edit`, formData, { withCredentials: true });
+            const result = await axios.post(`${serverUrl}/api/item/add-item`, formData, { withCredentials: true });
 
+            console.log("result: ", result.data);
             dispatch(setMyShopData(result.data))
+            console.log(myShopData);
+
+            console.log("item", result);
         }
         catch (err) {
             console.log("error occured while creating your shop ", err, " . Try again later!!")
@@ -49,7 +53,7 @@ function CreateEditShop() {
     }
 
     return (
-        <div className='flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen'>
+        <div className='overflow-hidden flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen'>
             <div className='absolute top-[20px] left-[20px] z-[10] mb-[10px]'>
                 <IoMdArrowBack size={35} className='text-[#ff4d2d]' onClick={() => navigate('/')} />
             </div>
@@ -64,7 +68,7 @@ function CreateEditShop() {
 
                     {/* edit or create shop */}
                     <div className='text-3xl font-extrabold text-gray-900'>
-                        {myShopData ? "Edit Shop" : "Add Shop"}
+                        Add Food Item
                     </div>
                 </div>
 
@@ -72,17 +76,17 @@ function CreateEditShop() {
                 {/* form for shop creation/edit */}
                 <form className='space-y-5' onSubmit={handleSubmit}>
 
-                    {/* Shop Name */}
+                    {/* Food Name */}
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-1'>Name</label>
-                        <input type='text' placeholder='Enter Shop Name' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2  focus:ring-orange-500' onChange={(ev) => {
+                        <input type='text' placeholder='Enter Food Name' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2  focus:ring-orange-500' onChange={(ev) => {
                             setName(ev.target.value)
                         }} value={name} />
                     </div>
 
                     {/* Picture of Shop */}
                     <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Shop Image</label>
+                        <label className='block text-sm font-medium text-gray-700 mb-1'>Food Image</label>
                         <input type='file' accept='image/*' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2  focus:ring-orange-500' onChange={handleImage} />
 
                         {frontendImage &&
@@ -92,31 +96,38 @@ function CreateEditShop() {
                         }
                     </div>
 
-                    {/* State and City of Shop */}
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                        {/* City */}
-                        <div>
-                            <label className='block text-sm font-medium text-gray-700 mb-1'>City</label>
-                            <input type='text' placeholder='City Name' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2  focus:ring-orange-500' onChange={(e) => {
-                                setCity(e.target.value)
-                            }} value={city} />
-                        </div>
-
-                        {/* State */}
-                        <div>
-                            <label className='block text-sm font-medium text-gray-700 mb-1'>State</label>
-                            <input type='text' placeholder='State Name' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2  focus:ring-orange-500' onChange={(e) => {
-                                setState(e.target.value)
-                            }} value={state} />
-                        </div>
+                    {/* Price */}
+                    <div>
+                        <label className='block text-sm font-medium text-gray-700 mb-1'>Enter Price</label>
+                        <input type='number' placeholder='0' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2  focus:ring-orange-500' onChange={(ev) => {
+                            setPrice(ev.target.value)
+                        }} value={price} />
                     </div>
 
-                    {/* Address of Shop */}
+                    {/* Category */}
                     <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Address</label>
-                        <input type='text' placeholder='Enter Shop Address' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2  focus:ring-orange-500' onChange={(e) => {
-                            setAddress(e.target.value)
-                        }} value={address} />
+                        <label className='block text-sm font-medium text-gray-700 mb-1'>Select Category</label>
+                        <select className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2  focus:ring-orange-500' onChange={(ev) => {
+                            setCategory(ev.target.value)
+                        }} value={category}>
+                            <option value="" disabled>Select Category</option>
+                            {categories.map((cat, ind) => {
+                                return <option value={cat} key={ind}>{cat}</option>
+                            })}
+                        </select>
+                    </div>
+
+                    {/* Veg or Non Veg */}
+                    <div>
+                        <label className='block text-sm font-medium text-gray-700 mb-1'>Select Food Type</label>
+                        <select className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2  focus:ring-orange-500' onChange={(ev) => {
+                            setFoodType(ev.target.value)
+                        }} value={foodType}>
+                            <option value="veg">
+                                Veg
+                            </option>
+                            <option value="non veg">Non-Veg</option>
+                        </select>
                     </div>
 
                     {/* Button to Add or edit shop */}
@@ -127,4 +138,4 @@ function CreateEditShop() {
     )
 }
 
-export default CreateEditShop
+export default AddItem

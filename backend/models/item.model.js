@@ -20,18 +20,18 @@ const itemSchema = new Schema({
         enum: ["Snacks", "Main Course", "Deserts", "Pizza", "Burgers", "Sandwiches", "South Indian", "North Indian", "Chinese", "Fast Food", "Others"],
         required: true
     },
-    price:{
-        type:Number,
-        required:true,
-        min:0
+    price: {
+        type: Number,
+        required: true,
+        min: 0
     },
-    foodType:{
-        type:String,
-        enum: ["veg","non veg"],
-        required:true
+    foodType: {
+        type: String,
+        enum: ["veg", "non veg"],
+        required: true
     }
 }, { timestamps: true })
 
-const Item  = mongoose.model("Item", itemSchema)
+const Item = mongoose.model("Item", itemSchema)
 
 export default Item;

@@ -7,6 +7,7 @@ export const createEditShop = async (req, res) => {
 
         let image;
         if (req.file) {
+            console.log(req.file);
             image = await uploadOnCloudinary(req.file.path)
         }
 
@@ -25,27 +26,26 @@ export const createEditShop = async (req, res) => {
         }
 
         await shop.populate("owner");
+        await shop.populate("items");
         // populate helps in replacing the req.userID with the original data =>like a join operation
 
-        return res.status(201).json(shop)
+        return res.status(200).json(shop)
     }
     catch (error) {
         return res.status(500).json({ message: `create shop error ${error}` })
     }
 }
 
-export const getMyShop = async (req,res) =>{
-    try{
-        const shop = await Shop.findOne({owner: req.userId}).populate("owner items")
+export const getMyShop = async (req, res) => {
+    try {
+        const shop = await Shop.findOne({ owner: req.userId }).populate("owner items")
 
-        if(!shop)
-        {
+        if (!shop) {
             return null;
         }
 
         return res.status(200).json(shop);
-    }catch(error)
-    {
+    } catch (error) {
         return res.status(500).json(
             {
                 message: `get my shop error ${error}`

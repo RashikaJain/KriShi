@@ -11,8 +11,8 @@ import { FaPlus } from "react-icons/fa6";
 import { LuReceipt } from "react-icons/lu";
 
 function Nav() {
-    const { userData, city } = useSelector(state => state.user);
-    const { myShopData} = useSelector(state => state.owner);
+    const { userData, currentCity } = useSelector(state => state.user);
+    const { myShopData } = useSelector(state => state.owner);
     const [showInfo, setShowInfo] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
     const dispatch = useDispatch();
@@ -35,7 +35,7 @@ function Nav() {
                 <div className='w-[90%] h-[70px] bg-white shadow-xl rounded-lg items-center gap-[20px] flex fixed top-[80px] left-[5%] md:hidden'>
                     <div className='flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400'>
                         <FaLocationDot className='text-[#ff4d2d]' size={25} />
-                        <div className='w-[80%] truncate text-gray-600'>{city}</div>
+                        <div className='w-[80%] truncate text-gray-600'>{currentCity}</div>
                     </div>
                     <div className='w-[80%] flex items-center gap-[10px]'>
                         <IoIosSearch size={25} className='text-[#ff4d2d]' />
@@ -51,7 +51,7 @@ function Nav() {
                 <div className='md:w-[60%] lg:w-[40%] h-[70px] bg-white shadow-xl rounded-lg items-center gap-[20px] hidden md:flex'>
                     <div className='flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400'>
                         <FaLocationDot className='text-[#ff4d2d]' size={25} />
-                        <div className='w-[80%] truncate text-gray-600'>{city}</div>
+                        <div className='w-[80%] truncate text-gray-600'>{currentCity}</div>
                     </div>
                     <div className='w-[80%] flex items-center gap-[10px]'>
                         <IoIosSearch size={25} className='text-[#ff4d2d]' />
@@ -72,27 +72,27 @@ function Nav() {
                 {userData.role == "owner" ?
                     <>
                         {/* Add Food Items Button */}
-                        {myShopData && 
-                        <>
-                        <button className='hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]'>
-                            <FaPlus size={20} />
-                            <span>Add Food Item</span>
-                        </button>
+                        {myShopData &&
+                            <>
+                                <button className='hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]'>
+                                    <FaPlus size={20} />
+                                    <span>Add Food Item</span>
+                                </button>
 
-                        {/* Food items for smaller buttons */}
-                        <button className='md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]' title='Add Food Item'>
-                            <FaPlus size={20} />
-                        </button>
-                        </>}
-                        
+                                {/* Food items for smaller buttons */}
+                                <button className='md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]' title='Add Food Item'>
+                                    <FaPlus size={20} />
+                                </button>
+                            </>}
+
                         <div className='hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium'>
-                            <LuReceipt size={20}/>
+                            <LuReceipt size={20} />
                             <span>My Orders</span>
                             <span className='absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]'>0</span>
                         </div>
 
                         <div className='md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium' title='My Orders'>
-                            <LuReceipt size={20}/>
+                            <LuReceipt size={20} />
                             <span className='absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]'>0</span>
                         </div>
                     </> : (
