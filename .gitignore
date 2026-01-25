@@ -1,0 +1,20 @@
+# Ignore all env files everywhere
+*.env
+**/*.env
+.env
+./backend/.env
+./client/.env
+
+# Common Next/React-style env files
+.env.local
+.env.development
+.env.production
+.env.test
+**/.env.local
+**/.env.development
+**/.env.production
+**/.env.test
+
+# Ignore all node_modules everywhere
+node_modules/
+**/node_modules/
