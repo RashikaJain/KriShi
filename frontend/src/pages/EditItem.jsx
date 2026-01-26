@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoMdArrowBack } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaUtensils } from "react-icons/fa";
 import axios from "axios"
 import { serverUrl } from "../App"
 import { setMyShopData } from '../redux/ownerSlice';
 import { ClipLoader } from 'react-spinners';
 
-function AddItem() {
+function EditItem() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [currentItem, setCurrentItem] = useState("");
     const { myShopData } = useSelector(state => state.owner);
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0)
@@ -20,6 +21,7 @@ function AddItem() {
     const [frontendImage, setFrontendImage] = useState(null)
     const [backendImage, setBackendImage] = useState(null);
     const dispatch = useDispatch();
+    const { itemId } = useParams();
 
     const handleImage = (e) => {
         const file = e.target.files[0];
@@ -42,11 +44,13 @@ function AddItem() {
                 formData.append("image", backendImage);
             }
 
-            const result = await axios.post(`${serverUrl}/api/item/add-item`, formData, { withCredentials: true });
+            const result = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData, { withCredentials: true });
 
             console.log("result: ", result.data);
             dispatch(setMyShopData(result.data))
             console.log(myShopData);
+
+            console.log("item", result);
             setLoading(false);
             navigate('/')
         }
@@ -55,6 +59,32 @@ function AddItem() {
             setLoading(false);
         }
     }
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const result = await axios.get(`${serverUrl}/api/item/get-by-id/${itemId}`,
+                    { withCredentials: true }
+                );
+
+                setCurrentItem(result.data);
+
+            }
+            catch (err) {
+                console.log(err);
+            }
+        })();
+    }, [itemId])
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setName(currentItem?.name || "")
+        setPrice(currentItem?.price || 0);
+        setCategory(currentItem?.category || "")
+        setFrontendImage(currentItem?.image || null)
+        setFoodType(currentItem?.foodType || "veg")
+
+    }, [currentItem])
 
     return (
         <div className='overflow-hidden flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen'>
@@ -72,7 +102,7 @@ function AddItem() {
 
                     {/* edit or create shop */}
                     <div className='text-3xl font-extrabold text-gray-900'>
-                        Add Food Item
+                        Edit Food Item
                     </div>
                 </div>
 
@@ -134,12 +164,12 @@ function AddItem() {
                         </select>
                     </div>
 
-                    {/* Button to Add or edit shop */}
-                    <button className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg  transition-all duration-200 cursor-pointer' disabled={loading}>{loading ? <ClipLoader  size={20} color='white' /> : "Save"}</button>
+                    {/* Button to Editor edit shop */}
+                    <button className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg  transition-all duration-200 cursor-pointer' disabled={loading}>{loading ? <ClipLoader size={20} color='white' /> : "Save"}</button>
                 </form>
             </div>
         </div>
     )
 }
 
-export default AddItem
+export default EditItem
