@@ -11,11 +11,13 @@ import useGetMyShop from './hooks/useGetMyShop.js'
 import CreateEditShop from './pages/CreateEditShop.jsx'
 import AddItem from './pages/AddItem.jsx'
 import EditItem from './pages/EditItem.jsx'
+import useGetShopByCity from './hooks/useGetShopByCity.jsx'
 
 export const serverUrl = "http://localhost:8000"
 
 
 export default function App() {
+  useGetShopByCity();
   useGetCurrentUser();
   useGetCity();
   useGetMyShop();

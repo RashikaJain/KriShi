@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* for older browser versions and other versions like firefox */
+*{
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* for chrome and safari */
+::-webkit-scrollbar{
+  display: none;
+}
+
 html, body {
   max-width: 100%;
   overflow-x: hidden;
