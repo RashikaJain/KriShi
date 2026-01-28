@@ -5,9 +5,10 @@ import CategoryCard from './CategoryCard.jsx'
 import { FaCircleChevronLeft } from 'react-icons/fa6'
 import { FaCircleChevronRight } from 'react-icons/fa6'
 import { useSelector } from 'react-redux'
+import FoodCard from './FoodCard.jsx'
 
 function UserDashboard() {
-    const {currentCity,shopInMyCity} = useSelector(state=>state.user)
+    const {currentCity,shopInMyCity,itemsInMyCity} = useSelector(state=>state.user)
     const [showLeftCateButton, setShowLeftCateButton] = useState(false);
     const [showRightCateButton, setShowRightCateButton] = useState(false);
     const [showLeftShopButton, setShowLeftShopButton] = useState(false);
@@ -84,6 +85,7 @@ function UserDashboard() {
                         </button>}
                 </div>
 
+                {/* Famous Shops */}
                 <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
                    <h1 className='text-gray-800 text-2xl sm:text-3xl '>Best Shop in {currentCity}</h1> 
 
@@ -98,12 +100,23 @@ function UserDashboard() {
                             return <CategoryCard name={shop.name || "Name not defined"} image={shop.image} key={ind} />
                         })}
                     </div>
-                    {showRightShopButton &&
+                  {showRightShopButton &&
                         <button className='absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528]  z-10' onClick={() => scrollHandler(shopScrollRef, "right")}>
                             <FaCircleChevronRight />
                         </button>}
                 </div>
 
+                </div>
+
+                {/* Famous Food Items */}
+                <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
+                    <h1 className='text-gray-800 text-2xl sm:text-3xl '>Suggested Food Items</h1>
+
+                    <div className='w-full h--auto flex flex-wrap gap-[20px] justify-center'>
+                        {itemsInMyCity?.map((item,ind)=>{
+                            return <FoodCard key={ind} data={item}/>
+                        })}
+                    </div>
                 </div>
 
             </div>

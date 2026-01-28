@@ -7,7 +7,6 @@ export const createEditShop = async (req, res) => {
 
         let image;
         if (req.file) {
-            console.log(req.file);
             image = await uploadOnCloudinary(req.file.path)
         }
 
