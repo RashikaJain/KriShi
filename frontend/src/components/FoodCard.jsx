@@ -2,16 +2,21 @@ import React, { useState } from 'react'
 import { FaLeaf, FaMinus, FaPlus, FaRegStar, FaShoppingCart } from "react-icons/fa"
 import { FaStar } from 'react-icons/fa'
 import { FaDrumstickBite } from "react-icons/fa"
+import { addToCart } from '../redux/userSlice.js'
+import { useDispatch, useSelector } from "react-redux"
 
 function FoodCard({ data }) {
     const [quantity, setQuantity] = useState(0);
+    const dispatch = useDispatch();
+    const { cartItems } = useSelector(state => state.user);
+
     const renderStars = (rating) => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
             stars.push(
                 (i <= rating) ?
-                    (<FaStar className='text-yellow-500 text-lg' />) :
-                    (<FaRegStar className='text-yellow-500 text-lg' />)
+                    (<FaStar className='text-yellow-500 text-lg' key={i} />) :
+                    (<FaRegStar className='text-yellow-500 text-lg'key={i} />)
             )
         }
 
@@ -71,7 +76,21 @@ function FoodCard({ data }) {
                     <button className='px-2 py-1 hover:bg-gray-100 transition' onClick={handleIncrease}>
                         <FaPlus size={12} />
                     </button>
-                    <button className='bg-[#ff4d2d] text-white px-3 py-2 transition-colors'>
+                    <button className={`${cartItems?.some(i => i.id == data._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} 
+                     text-white px-3 py-2 transition-colors`} onClick={() => {
+                        if(quantity>0)
+                        {
+                            dispatch(addToCart({
+                            id: data._id,
+                            name: data.name,
+                            price: data.price,
+                            image: data.image,
+                            shop: data.shop,
+                            quantity,
+                            foodType: data.foodType
+                        }))
+                        }
+                        }}>
                         <FaShoppingCart size={16} />
                     </button>
                 </div>

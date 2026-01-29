@@ -8,7 +8,8 @@ const userSlice = createSlice({
         currentState: null,
         currentAddress: null,
         shopInMyCity: null,
-        itemsInMyCity: null
+        itemsInMyCity: null,
+        cartItems: []
     },
     reducers: {
         setUserData: (state, action) => {
@@ -28,9 +29,21 @@ const userSlice = createSlice({
         },
         setItemsInMyCity: (state, action) => {
             state.itemsInMyCity = action.payload
+        },
+        addToCart: (state, action) => {
+            const cartItem = action.payload;
+            const existingItem = state.cartItems.find(i => i.id == cartItem.id)
+            if (existingItem) {
+                existingItem.quantity += cartItem.quantity;
+            }
+            else {
+                state.cartItems.push(cartItem);
+            }
+
+            console.log("cart item to be added: ", cartItem);
         }
     }
 });
 
-export const { setUserData, setCurrentCity, setCurrentState, setCurrentAddress, setShopInMyCity, setItemsInMyCity } = userSlice.actions
+export const { setUserData, setCurrentCity, setCurrentState, setCurrentAddress, setShopInMyCity, setItemsInMyCity, addToCart } = userSlice.actions
 export default userSlice.reducer
