@@ -13,6 +13,11 @@ import AddItem from './pages/AddItem.jsx'
 import EditItem from './pages/EditItem.jsx'
 import useGetShopByCity from './hooks/useGetShopByCity.jsx'
 import useGetItemsByCity from './hooks/useGetItemsByCity.jsx'
+import useGetMyOrders from "./hooks/useGetMyOrders.jsx"
+import CartPage from './pages/CartPage.jsx'
+import CheckOut from './pages/CheckOut.jsx'
+import OrderPlaced from './pages/OrderPlaced.jsx'
+import MyOrders from './pages/MyOrders.jsx'
 
 export const serverUrl = "http://localhost:8000"
 
@@ -23,6 +28,7 @@ export default function App() {
   useGetCity();
   useGetMyShop();
   useGetItemsByCity();
+  useGetMyOrders();
   const { userData } = useSelector(state => state.user)
   return (
     <Routes>
@@ -33,6 +39,10 @@ export default function App() {
       <Route path='/create-edit-shop' element={userData ? <CreateEditShop /> : <Navigate to={"/signin"} />} />
       <Route path='/add-food' element={userData ? <AddItem /> : <Navigate to={"/signin"} />} />
       <Route path='/edit-item/:itemId' element={userData ? <EditItem /> : <Navigate to={"/signin"} />} />
+      <Route path='/cart' element={userData ? <CartPage /> : <Navigate to={"/signin"} />} />
+      <Route path='/checkout' element={userData ? <CheckOut /> : <Navigate to={"/signin"} />} />
+      <Route path='/order-placed' element={userData ? <OrderPlaced /> : <Navigate to={"/signin"} />} />
+      <Route path='/my-orders' element={userData ? <MyOrders /> : <Navigate to={"/signin"} />} />
     </Routes>
   )
 }

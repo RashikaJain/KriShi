@@ -16,7 +16,7 @@ function FoodCard({ data }) {
             stars.push(
                 (i <= rating) ?
                     (<FaStar className='text-yellow-500 text-lg' key={i} />) :
-                    (<FaRegStar className='text-yellow-500 text-lg'key={i} />)
+                    (<FaRegStar className='text-yellow-500 text-lg' key={i} />)
             )
         }
 
@@ -64,7 +64,7 @@ function FoodCard({ data }) {
             {/* Price Section */}
             <div className='flex items-center justify-between mt-auto p-3'>
                 <span className='font-bold text-gray-900 text-lg'>
-                    {data.price}
+                    ₹{data.price}
                 </span>
                 <div className='flex items-center border rounded-full overflow-hidden shadow-sm'>
                     <button className='px-2 py-1 hover:bg-gray-100 transition' onClick={handleDecrease}>
@@ -78,18 +78,18 @@ function FoodCard({ data }) {
                     </button>
                     <button className={`${cartItems?.some(i => i.id == data._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} 
                      text-white px-3 py-2 transition-colors`} onClick={() => {
-                        if(quantity>0)
-                        {
-                            dispatch(addToCart({
-                            id: data._id,
-                            name: data.name,
-                            price: data.price,
-                            image: data.image,
-                            shop: data.shop,
-                            quantity,
-                            foodType: data.foodType
-                        }))
-                        }
+                            console.log("reached in console to add item in the cart.")
+                            if (quantity > 0) {
+                                dispatch(addToCart({
+                                    id: data._id,
+                                    name: data.name,
+                                    price: data.price,
+                                    image: data.image,
+                                    shop: data.shop,
+                                    quantity,
+                                    foodType: data.foodType
+                                }))
+                            }
                         }}>
                         <FaShoppingCart size={16} />
                     </button>

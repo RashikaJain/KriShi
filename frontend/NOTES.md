@@ -28,6 +28,68 @@ we can use the useEffect hook whenever we have custom hooks to call orthe fuctio
 # API FOR GETTING CITY NAME
 Geoapify => helps in retrieving the location of the user 
 
+# States in redux
+Case 1: THIS WILL update state (Redux Toolkit / Immer)
+state.cartItems.push(cartItem);
+
+
+✔️ This DOES modify state.cartItems
+
+Why?
+
+state.cartItems is the actual array in state
+
+push() mutates the array
+
+Immer tracks this mutation and safely updates Redux state
+
+So:
+
+Item WILL be stored in state
+You CAN access it later
+
+No copy involved here.
+
+Case 2: THIS will NOT update state
+const cartItems = state.cartItems;
+cartItems.push(cartItem);
+
+
+❗ Still updates state (same reference)
+
+Because:
+
+cartItems points to the same array
+
+No copy created
+
+Many devs wrongly think this is a copy. It is NOT.
+
+Case 3: THIS is where state does NOT change
+const cartItems = [...state.cartItems]; // COPY created
+cartItems.push(cartItem);
+
+
+❌ State does NOT change
+
+Why?
+
+[...] creates a new array
+
+You pushed into the copy
+
+state.cartItems remains untouched
+
+Unless you do:
+
+state.cartItems = cartItems;
+
+Redux never sees the update.
+
+One-liner rule (burn this into your brain)
+
+Mutation affects state only if you mutate the SAME reference that state holds
+
 
 # React + Vite
 

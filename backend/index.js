@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import shopRouter from "./routes/shop.routes.js";
 import itemRouter from "./routes/item.routes.js";
+import orderRouter from "./routes/order.routes.js";
 
 dotenv.config({
     path: "./.env"
@@ -33,6 +34,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter)
 app.use("/api/shop", shopRouter)
 app.use("/api/item", itemRouter)
+app.use("/api/order", orderRouter);
 
 app.listen(port, () => {
     connectDB();

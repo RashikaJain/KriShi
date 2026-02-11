@@ -6,6 +6,21 @@
 
 502  => another server failed
 
+# Order Model 
+In order model, we are getting orders from various restaurants. So we first get all the items. Right after that we try to get all the restaurants from where order is done. Right after that we again get all the items ordered from a restaurant
+
+# Without Route Guarding, How we are able to still go to home page and not directly to the given route ?
+The /checkout route is redirecting you because, at render time of <App />, your userData is falsy/undefined for a moment, so the <Route path='/checkout' ...> resolves to <Navigate to={"/signin"} />, and from there your auth flow sends you back to / once you’re logged in.
+
+What’s happening
+All these hooks run on every mount of App: useGetCurrentUser, useGetCity, useGetMyShop, etc.
+​
+
+On the initial render, userData from Redux is still the default state (likely null or {}), so every protected route uses the : <Navigate to={"/signin"} /> branch.
+
+example: 
+When you manually hit http://localhost:5173/checkout, React Router matches /checkout, sees userData as falsy, and immediately navigates you away, so you never see <CheckOut /> even though no explicit guard is written on that route.
+
 # How image uploads travels from frontend to backend 
 
 the image when is sent from the frontend to backend => it is sent to multer middleware 
@@ -16,6 +31,14 @@ Multer is a node.js middleware for handling multipart/form-data, which is primar
 ### NOTE
  Multer will not process any form which is not multipart
 
+# Maps and Leaflet
+If we use the leaflet we can use maps for our use. We can also use google maps but that is a paid version, on the other hand leaflet is a free service when it comes to integrating maps within our system 
+
+To work with maps 
+=> import leaflet
+
+To work with leaflet 
+=> import react-leaflet in addition to leaflet
 
 # What is Multer?
 

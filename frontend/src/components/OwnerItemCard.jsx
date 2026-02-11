@@ -28,7 +28,7 @@ function OwnerItemCard({ data }) {
                 <img
                     src={data.image}
                     alt={data.name}
-                    className='w-full object-cover'
+                    className='w-full h-full object-cover'
                 />
             </div>
 
