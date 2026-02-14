@@ -11,6 +11,7 @@ import { MdDeliveryDining } from "react-icons/md"
 import { FaCreditCard, FaMobileScreenButton } from "react-icons/fa6"
 import axios from "axios"
 import {serverUrl} from "../App.jsx"
+import { addMyOrder } from '../redux/userSlice.js'
 
 function CheckOut() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ function CheckOut() {
         paymentMethod,
         totalAmount
       },{withCredentials: true});
-      console.log(result.data);
+      dispatch(addMyOrder(result.data));
       navigate("/order-placed");
     }
     catch(error)
