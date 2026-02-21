@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { MdPhone } from "react-icons/md"
 import { } from "../pages/Home"
 import { serverUrl } from '../App.jsx'
@@ -8,7 +8,7 @@ import { updateOrderStatus } from '../redux/userSlice.js'
 
 
 function OwnerOrderCard({ data }) {
-
+  const [availableBoys, setAvailableBoys] = useState([]);
   const dispatch = useDispatch();
 
   const handleUpdateStatus = async (orderId, shopId, status) => {
@@ -17,8 +17,11 @@ function OwnerOrderCard({ data }) {
         { withCredentials: true }
       )
 
-      dispatch(updateOrderStatus({ orderId, shopId, status}))
+      dispatch(updateOrderStatus({ orderId, shopId, status }))
       console.log(result.data);
+
+      //  set the delivery boys available for the order 
+      setAvailableBoys(result.data.availableBoys);
     }
     catch (err) {
       console.log(err);
@@ -62,7 +65,6 @@ function OwnerOrderCard({ data }) {
 
         {/* Select Status of Order */}
         <select className='rounded-md border px-3 py-1 text-sm focus:outline-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d]' onChange={(e) => {
-          console.log(data);
           handleUpdateStatus(data.id, data.shopOrders.shop._id, e.target.value)
         }}>
           <option value="">Change</option>
@@ -71,6 +73,22 @@ function OwnerOrderCard({ data }) {
           <option value="out for delivery">Out for Delivery</option>
         </select>
       </div>
+
+      {data.shopOrders.status == "out for delivery" &&
+        <div className='mt-3 p-2 border rounded-lg text-sm bg-orange-50'>
+          {data.shopOrders.assignedDeliveryBoy ? <p>Assigned Delivery Boy: </p>:<p>Available Delivery Boys: </p>}
+          {
+            availableBoys?.length > 0 ?
+              (
+                availableBoys.map((b) => (
+                  <div className='text-gray-500'>{b.name}-{b.mobile}
+                  </div>
+                ))
+              ) :
+              data.shopOrders?.assignedDeliveryBoy ? <div>{data.shopOrders.assignedDeliveryBoy.fullName}-{data.shopOrders.assignedDeliveryBoy.mobile}</div> : <div>Looking for nearby delivery boys</div>
+          }
+        </div>
+      }
 
       {/* Total */}
       <div className='text-right font-bold text-gray-800 text-sm'>Total: ₹{data.shopOrders.subtotal}</div>
