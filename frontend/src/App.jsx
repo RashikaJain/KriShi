@@ -20,6 +20,7 @@ import OrderPlaced from './pages/OrderPlaced.jsx'
 import MyOrders from './pages/MyOrders.jsx'
 import useUpdateLocation from './hooks/useUpdateLocation.jsx'
 import TrackOrderPage from './pages/TrackOrderPage.jsx'
+import Shop from './pages/Shop.jsx'
 
 export const serverUrl = "http://localhost:8000"
 
@@ -47,6 +48,7 @@ export default function App() {
       <Route path='/order-placed' element={userData ? <OrderPlaced /> : <Navigate to={"/signin"} />} />
       <Route path='/my-orders' element={userData ? <MyOrders /> : <Navigate to={"/signin"} />} />
       <Route path='/track-order/:orderId' element={userData ? <TrackOrderPage /> : <Navigate to={"/signin"} />} />
+      <Route path='/shop/:shopId' element={userData ? <Shop /> : <Navigate to={"/signin"} />} />
     </Routes>
   )
 }

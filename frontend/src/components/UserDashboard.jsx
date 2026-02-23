@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useEffect, useRef, useState } from 'react'
 import Nav from "./Nav.jsx"
 import { categories } from '../category.js'
@@ -6,6 +7,7 @@ import { FaCircleChevronLeft } from 'react-icons/fa6'
 import { FaCircleChevronRight } from 'react-icons/fa6'
 import { useSelector } from 'react-redux'
 import FoodCard from './FoodCard.jsx'
+import { useNavigate } from 'react-router-dom'
 
 function UserDashboard() {
     const { currentCity, shopInMyCity, itemsInMyCity } = useSelector(state => state.user)
@@ -13,8 +15,29 @@ function UserDashboard() {
     const [showRightCateButton, setShowRightCateButton] = useState(false);
     const [showLeftShopButton, setShowLeftShopButton] = useState(false);
     const [showRightShopButton, setShowRightShopButton] = useState(false);
+    const [updatedItemsList, setUpdatedItemsList] = useState(itemsInMyCity);
     const cateScrollRef = useRef();
     const shopScrollRef = useRef();
+    const navigate = useNavigate();
+
+    // To filter the Items
+    const handleFilterByCategory = (category) => {
+        if (category == 'All') {
+            setUpdatedItemsList(itemsInMyCity)
+            return;
+        }
+
+        const filteredList = itemsInMyCity?.filter((i) => i.category === category)
+
+        // get the  updated items 
+        setUpdatedItemsList(filteredList);
+        return;
+    }
+
+    useEffect(() => {
+        setUpdatedItemsList(itemsInMyCity)
+    }, [itemsInMyCity]);
+
     const scrollHandler = (ref, direction) => {
         if (ref.current) {
             ref.current.scrollBy({
@@ -77,7 +100,7 @@ function UserDashboard() {
                         </button>}
                     <div className='w-full flex overflow-x-auto gap-4 pb-2 ' ref={cateScrollRef}>
                         {categories.map((cate, ind) => {
-                            return <CategoryCard name={cate.category} image={cate.image} key={ind} />
+                            return <CategoryCard name={cate.category} image={cate.image} key={ind} onClick={() => { handleFilterByCategory(cate.category) }} />
                         })}
                     </div>
                     {showRightCateButton &&
@@ -88,7 +111,7 @@ function UserDashboard() {
 
                 {/* Famous Shops */}
                 <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
-                    <h1 className='text-gray-800 text-2xl sm:text-3xl '>Best Shop in {currentCity}</h1>
+                    <h1 className='text-gray-800 text-2xl sm:text-3xl '>Avaliable Shops in {currentCity}</h1>
 
                     <div className='w-full relative'>
                         {showLeftShopButton &&
@@ -98,7 +121,9 @@ function UserDashboard() {
                             </button>}
                         <div className='w-full flex overflow-x-auto gap-4 pb-2 ' ref={shopScrollRef}>
                             {shopInMyCity?.map((shop, ind) => {
-                                return <CategoryCard name={shop.name || "Name not defined"} image={shop.image} key={ind} />
+                                return <CategoryCard name={shop.name || "Name not defined"} image={shop.image} key={ind} onClick={()=>{
+                                   navigate(`/shop/${shop._id}`) 
+                                }} />
                             })}
                         </div>
                         {showRightShopButton &&
@@ -114,9 +139,9 @@ function UserDashboard() {
                     <h1 className='text-gray-800 text-2xl sm:text-3xl '>Suggested Food Items</h1>
 
                     <div className='w-full h--auto flex flex-wrap gap-[20px] justify-center'>
-                        {itemsInMyCity?.map((item, ind) => {
+                        {updatedItemsList?.length !== 0 ? updatedItemsList?.map((item, ind) => {
                             return <FoodCard key={ind} data={item} />
-                        })}
+                        }) : <div className='text-md text-center text-gray-600 mb-4 mt-4'>This item does not exist. (We are expanding and will introduce new items very soon.)</div>}
                     </div>
                 </div>
 
