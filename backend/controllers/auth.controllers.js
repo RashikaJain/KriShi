@@ -43,7 +43,7 @@ export const signUp = async (req, res) => {
         // send the cookies to client
         const options = {
             secure: true, // only https?
-            sameSite: "none",
+            sameSite: "None",
             maxAge: 7 * 24 * 60 * 60 * 1000, //milisec
             httpOnly: true
         }
@@ -82,7 +82,7 @@ export const signIn = async (req, res) => {
         // send the cookies to client
         const options = {
             secure: true, // only https?
-            sameSite: "none",
+            sameSite: "None",
             maxAge: 7 * 24 * 60 * 60 * 1000, //milisec
             httpOnly: true
         }
@@ -220,7 +220,7 @@ export const googleAuth = async (req,res)=> {
 
         res.cookie('token', token, {
             secure: true,
-            sameSite: "none",
+            sameSite: "None",
             maxAge:7*24*60*60*1000,
             httpOnly: true
         })
