@@ -12,6 +12,8 @@ const userSlice = createSlice({
         cartItems: [],
         totalAmount: 0,
         myOrders: [],
+        searchItems: null,
+        socket: null
     },
     reducers: {
         setUserData: (state, action) => {
@@ -31,6 +33,9 @@ const userSlice = createSlice({
         },
         setItemsInMyCity: (state, action) => {
             state.itemsInMyCity = action.payload
+        },
+        setSocket: (state, action) => {
+            state.socket = action.payload
         },
         addToCart: (state, action) => {
             const cartItem = action.payload;
@@ -81,9 +86,29 @@ const userSlice = createSlice({
                     console.log(order.shopOrders.status);
                 }
             }
+        },
+
+        updateRealtimeOrderStatus: (state, action) => {
+            console.log("reached in userslice updateRealtimeOrderStatus");
+            const { orderId, shopId, status } = action.payload;
+            const order = state.myOrders.find(o => o._id == orderId);
+
+            if (order) {
+                const shopOrder = order.shopOrders.find(so => so.shop._id == shopId);
+
+                console.log("shopOrder is: ", shopOrder);
+                if (shopOrder) {
+                    console.log("updating status here to", status);
+                    shopOrder.status = status;
+                }
+            }
+        },
+
+        setSearchItems: (state, action) => {
+            state.searchItems = action.payload
         }
     }
 });
 
-export const { addMyOrder, setMyOrders, setUserData, setCurrentCity, setCurrentState, setCurrentAddress, setShopInMyCity, setItemsInMyCity, addToCart, updateQuantity, removeCardItem, updateOrderStatus } = userSlice.actions
+export const { addMyOrder, setMyOrders, setUserData, setCurrentCity, setCurrentState, setCurrentAddress, setShopInMyCity, setItemsInMyCity, addToCart, updateQuantity, removeCardItem, updateOrderStatus, setSearchItems, setSocket, updateRealtimeOrderStatus } = userSlice.actions
 export default userSlice.reducer

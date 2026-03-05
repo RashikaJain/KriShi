@@ -42,7 +42,6 @@ export const addItem = async (req, res) => {
 
         return res.status(200).json(updatedShop);
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             message: `Add item error : ${error}`,
         });
@@ -160,63 +159,91 @@ export const deleteItem = async (req, res) => {
     }
 };
 
-export const getItemsByCity = async (req,res)=>{
-    try{
-        const {city} =  req.params;
-        console.log("city got as :  " ,city )
-        if(!city)
-        {
-            return res.status(400).json({message: "City is required"});
+export const getItemsByCity = async (req, res) => {
+    try {
+        const { city } = req.params;
+        if (!city) {
+            return res.status(400).json({ message: "City is required" });
         }
 
-        const shops =  await Shop.find({
-            city:{$regex: new RegExp(`^${city}$`,"i")}
+        const shops = await Shop.find({
+            city: { $regex: new RegExp(`^${city}$`, "i") }
         }).populate("items");
 
-        if(shops.length === 0)
-        {
-            console.log("error in shop finding")
-            return res.status(400).json({message:"Shop for the city not found"});
+        if (shops.length === 0) {
+            console.log("error in shop finding : item.controller")
+            return res.status(400).json({ message: "Shop for the city not found" });
         }
 
-        const shopIds = shops.map((shop,ind)=>shop._id);
+        const shopIds = shops.map((shop, ind) => shop._id);
 
         // as the shop are stored using their ids only 
         const items = await Item.find({
-            shop:{
-                $in:shopIds
+            shop: {
+                $in: shopIds
             }
         })
 
-        console.log(items, ", error in items finding");
-
         return res.status(200).json(items);
     }
-    catch(error)
-    {
+    catch (error) {
         return res.status(500).json({
             message: `Items as per city controller not found, ${error}`
         })
     }
 }
 
-export const getItemsByShop = async (req,res)  => {
-    try
-    {
-        const {shopId} = req.params;
+export const getItemsByShop = async (req, res) => {
+    try {
+        const { shopId } = req.params;
         const shop = await Shop.findById(shopId).populate("items");
 
-        if(!shop)
-        {
+        if (!shop) {
             return res.status(400).json("shop not found");
         }
 
-        return res.status(200).json({shop,items:shop.items});
+        return res.status(200).json({ shop, items: shop.items });
     }
-    catch(error)
-    {
+    catch (error) {
         return res.status(500).json({
             message: "Errors in finding the items using the shop"
+        })
+    }
+}
+
+export const searchItems = async (req, res) => {
+    try {
+        const { query, city } = req.query; // so hmari hi city ki items hi search ho
+
+        if (!query || !city) {
+            return null
+        }
+
+        const shops = await Shop.find({
+            city: { $regex: new RegExp(`^${city}$`, "i") }
+        });
+
+        if (!shops) {
+            return res.status(400).json("shop not found")
+        }
+
+        const shopIds = shops.map(s => s._id);
+
+        // now find the items 
+        const items = await Item.find({
+            shop: { $in: shopIds },
+            $or: [
+                { name: { $regex: query, $options: "i" } },
+                { category: { $regex: query, $options: "i" } }
+            ]
+        }).populate("shop", "name image");
+
+        return res.status(200).json(items);
+
+    }
+    catch (error) {
+        return res.status(500).json({
+            message: "Search items for food is not  working properly"
         })
     }
 }

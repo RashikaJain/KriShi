@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-const {Schema}  = mongoose;
+const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    fullName:  {
+    fullName: {
         type: String,
         required: true
     },
@@ -21,7 +21,7 @@ const userSchema = new Schema({
     },
     role: {
         type: String,
-        enum: ["user","owner","deliveryBoy"],
+        enum: ["user", "owner", "deliveryBoy"],
         required: true
     },
     resetOtp: {
@@ -31,8 +31,15 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    isOnline: {
+        type: Boolean,
+        default: false
+    },
     otpExpires: {
         type: Date
+    },
+    socketId: {
+        type: String
     },
     // jio json format => to get data in map format
     location: {
@@ -43,15 +50,15 @@ const userSchema = new Schema({
         },
         coordinates: {
             type: [Number],
-            default: [0,0]
+            default: [0, 0]
         }
     }
-},{timestamps: true})
+}, { timestamps: true })
 
 const User = mongoose.model("User", userSchema);
 
 // to treat the location like a map
-userSchema.index({'location': '2dsphere' }) 
+userSchema.index({ 'location': '2dsphere' })
 
 // mongodb jb bhi modelstore krta h it becomes plural User will become Users
 

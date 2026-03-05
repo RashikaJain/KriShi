@@ -278,3 +278,6 @@ Less memory.
 Better performance.
 
 In read-heavy APIs (like e-commerce orders listing), this matters a LOT.
+
+# SOCKET IO 
+hr kisiko socket id se recognize krke usko respond krta h

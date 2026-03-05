@@ -36,6 +36,10 @@ function OwnerOrderCard({ data }) {
         <h2 className='text-lg font-semibold text-gray-800'>{data.user.fullName}</h2>
         <p className='text-sm text-gray-500'>{data.user.email}</p>
         <p className='flex items-center gap-2 text-sm text-gray-600 mt-1'><MdPhone />{data.user.mobile}</p>
+        {
+          data.paymentMethod == "online" ? <p className='gap-2 text-sm text-gray-600'>Payment: {data.payment ? "true" : "false"}</p> : <p className='gap-2 text-sm text-gray-600'>Payment Method: {data.paymentMethod}</p>}
+
+        <p>payment Method: {data.paymentMethod}</p>
       </div>
 
       {/* Delivery Address */}
@@ -76,7 +80,7 @@ function OwnerOrderCard({ data }) {
 
       {data.shopOrders.status == "out for delivery" &&
         <div className='mt-3 p-2 border rounded-lg text-sm bg-orange-50'>
-          {data.shopOrders.assignedDeliveryBoy ? <p>Assigned Delivery Boy: </p>:<p>Available Delivery Boys: </p>}
+          {data.shopOrders.assignedDeliveryBoy ? <p>Assigned Delivery Boy: </p> : <p>Available Delivery Boys: </p>}
           {
             availableBoys?.length > 0 ?
               (

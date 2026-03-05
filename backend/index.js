@@ -8,14 +8,33 @@ import userRouter from "./routes/user.routes.js";
 import shopRouter from "./routes/shop.routes.js";
 import itemRouter from "./routes/item.routes.js";
 import orderRouter from "./routes/order.routes.js";
+import http from "http"
+import { Server } from "socket.io";
+import { socketHandler } from "./socket.js";
 
 dotenv.config({
     path: "./.env"
 })
 
+
 const port = process.env.PORT || 8080;
 
 const app = express();
+const server = http.createServer(app);
+
+
+// socket io 
+const io = new Server(server, {
+    cors:
+    {
+        origin: "http://localhost:5173",
+        credentials: true,
+        methods: ['POST', 'GET']
+    }
+})
+
+// set io to app
+app.set("io", io);
 
 // cors and configuration
 
@@ -36,7 +55,9 @@ app.use("/api/shop", shopRouter)
 app.use("/api/item", itemRouter)
 app.use("/api/order", orderRouter);
 
-app.listen(port, () => {
+socketHandler(io);
+
+server.listen(port, () => {
     connectDB();
     console.log(`server is listening on http/localhost:${port}`);
 })

@@ -9,7 +9,7 @@ import { serverUrl } from '../App.jsx'
 import DeliveryBoyTracking from "./DeliveryBoyTracking.jsx"
 
 function DeliveryBoy() {
-  const { userData } = useSelector(state => state.user);
+  const { userData, socket } = useSelector(state => state.user);
   const [currentOrder, setCurrentOrder] = useState(null)
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [otp, setOtp] = useState("");
@@ -22,6 +22,7 @@ function DeliveryBoy() {
     try {
       const result = await axios.get(`${serverUrl}/api/order/get-assignments`, { withCredentials: true });
 
+      console.log("get-assignments result is: ", result.data)
       setAvailableAssignments(result.data);
     } catch (error) {
       console.log(error);
@@ -71,6 +72,19 @@ function DeliveryBoy() {
       console.log(error)
     }
   }
+
+  // real time data effect 
+  useEffect(() => {
+    socket?.on('newAssignments', (data) => {
+      if (data.sentTo == userData._id) {
+        setAvailableAssignments(prev => [data, ...prev])
+      }
+    })
+
+    return () => {
+      socket.off('newAssignments')
+    }
+  }, [socket])
 
 
   useEffect(() => {

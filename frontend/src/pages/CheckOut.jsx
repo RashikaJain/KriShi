@@ -10,8 +10,9 @@ import { setAddress, setLocation } from '../redux/mapSlice'
 import { MdDeliveryDining } from "react-icons/md"
 import { FaCreditCard, FaMobileScreenButton } from "react-icons/fa6"
 import axios from "axios"
-import {serverUrl} from "../App.jsx"
+import { serverUrl } from "../App.jsx"
 import { addMyOrder } from '../redux/userSlice.js'
+import { ClipLoader } from "react-spinners"
 
 function CheckOut() {
   const navigate = useNavigate();
@@ -19,9 +20,10 @@ function CheckOut() {
   const [addressInput, setAddressInput] = useState("");
   const dispatch = useDispatch();
   const [paymentMethod, setPaymentMethod] = useState("cod");
-  const { cartItems, totalAmount } = useSelector(state => state.user);
+  const { cartItems, totalAmount, userData } = useSelector(state => state.user);
   const deliveryFee = totalAmount > 500 ? 0 : 50;
   const AmountWithDeliveryFee = totalAmount + deliveryFee;
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setAddressInput(address);
@@ -29,24 +31,65 @@ function CheckOut() {
 
   // backend data sending 
   const handlePlaceOrder = async () => {
-    try{
-      const result = await axios.post(`${serverUrl}/api/order/place-order`,{
-        deliveryAddress:{
-          text:addressInput,
-          latitude:location.lat,
-          longitude:location.lon
+    try {
+      setLoading(true);
+      const result = await axios.post(`${serverUrl}/api/order/place-order`, {
+        deliveryAddress: {
+          text: addressInput,
+          latitude: location.lat,
+          longitude: location.lon
         },
         cartItems,
         paymentMethod,
-        totalAmount
-      },{withCredentials: true});
-      dispatch(addMyOrder(result.data));
-      navigate("/order-placed");
+        totalAmount: AmountWithDeliveryFee
+      }, { withCredentials: true });
+
+      if (paymentMethod == "cod") {
+        dispatch(addMyOrder(result.data));
+        navigate("/order-placed");
+
+        setLoading(false);
+
+        return;
+      }
+
+      // for online payment => open razorpay window 
+      const orderId = result.data.orderId;
+      const razorOrder = result.data.razorOrder
+
+      openRazorpayWindow(orderId, razorOrder);
+
     }
-    catch(error)
-    {
+    catch (error) {
       console.log("Error in placing the order: ", error);
     }
+  }
+
+  const openRazorpayWindow = (orderId, razorOrder) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: razorOrder.amount,
+      currency: 'INR',
+      name: "Krishi",
+      description: "Food delivery website",
+      order_id: razorOrder.id,
+      handler: async function (response) {
+        try {
+          const result = await axios.post(`${serverUrl}/api/order/verify-payment`, {
+            razorpay_payment_id: response.razorpay_payment_id,
+            orderId
+          }, { withCredentials: true })
+          dispatch(addMyOrder(result.data));
+          navigate("/order-placed")
+        }
+        catch (error) {
+          console.log("error while verifying your order: ", error)
+        }
+      }
+    }
+    const rzp = new window.Razorpay(options)
+    setLoading(false);
+    rzp.open();
   }
 
 
@@ -98,13 +141,10 @@ function CheckOut() {
 
   // Get current location
   const getCurrentLocation = async () => {
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
-      dispatch(setLocation({ lat, lon }));
-      getAddressByLatLng(lat, lon)
-    })
+    const latitude = userData.location.coordinates[1];
+    const longitude = userData.location.coordinates[0];
+    dispatch(setLocation({ lat: latitude, lon: longitude }));
+    getAddressByLatLng(latitude, longitude)
   }
 
   return (
@@ -181,8 +221,10 @@ function CheckOut() {
                 <FaCreditCard className='text-blue-700 text-xl' />
               </span>
 
-              <div className='font-medium text-gray-800'>UPI/Credit/Debit</div>
-              <p className='text-xs text-gray-500'>Pay Securely Online</p>
+              <div className='flex flex-col'>
+                <div className='font-medium text-gray-800'>UPI/Credit/Debit</div>
+                <p className='text-xs text-gray-500'>Pay Securely Online</p>
+              </div>
             </div>
 
           </div>
@@ -220,7 +262,8 @@ function CheckOut() {
         </section>
 
         {/* Checkout button */}
-        <button className='w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold' onClick={handlePlaceOrder}>{paymentMethod == "cod" ? "Place Order" : "Pay & Place Order"}</button>
+        <button className='w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold' onClick={handlePlaceOrder} disabled={loading}>
+          {loading ? <ClipLoader size={20} color='white' /> : <span>{paymentMethod == "cod" ? "Place Order" : "Pay & Place Order"}</span>}</button>
 
       </div>
     </div>

@@ -13,7 +13,7 @@ function UserOrderCard({ data }) {
     })
   }
   return (
-    <div className='bg-white rounded-lg shadow-lg space-y-4'>
+    <div className='bg-white rounded-lg shadow-lg space-y-4 p-4'>
       <div className='flex justify-between border-b pb-2 '>
 
         {/* Left Div */}
@@ -28,6 +28,7 @@ function UserOrderCard({ data }) {
 
         {/* Right Div */}
         <div className='text-right'>
+          {data.paymentMethod == "cod" ? <p className='text-sm text-gray-500 font-semibold'>Payment Method: {data.paymentMethod?.toUpperCase()}</p> : <p className='text-sm text-gray-500 font-semibold'>Payment: {data.payment ? "true" : "false"}</p>}
           <p className='text-sm text-gray-500'>{data.paymentMethod.toUpperCase()}</p>
           <p className='font-medium text-blue-500 '>{data.shopOrders[0].status}</p>
         </div>

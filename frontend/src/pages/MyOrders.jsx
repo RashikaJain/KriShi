@@ -1,13 +1,38 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { IoMdArrowBack } from 'react-icons/io';
 import { useNavigate } from "react-router-dom"
 import UserOrderCard from "../components/UserOrderCard.jsx"
 import OwnerOrderCard from "../components/OwnerOrderCard.jsx"
+import { setMyOrders, updateRealtimeOrderStatus } from '../redux/userSlice.js';
 
 function MyOrders() {
-  const { userData, myOrders } = useSelector(state => state.user);
+  const { userData, myOrders, socket } = useSelector(state => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    socket.on('newOrder', (data) => {
+      console.log('newOrder received in MyOrders:', data);
+
+      if (data.shopOrders?.owner._id == userData._id) {
+        dispatch(setMyOrders([data, ...myOrders]));
+      }
+    })
+
+    socket.on('update-status', ({ userId, orderId, shopId, status }) => {
+      console.log("reached within the update-status socket frontend")
+      if (userId == userData._id) {
+        console.log("updating the status in realtime using socket.io")
+        dispatch(updateRealtimeOrderStatus({ orderId, shopId, status }))
+      }
+    })
+
+    return () => {
+      socket?.off('newOrder');
+      socket?.off('update-status')
+    }
+  }, [socket])
 
   return (
     <div className='w-full min-h-screen bg-[#fff9f6] flex justify-center px-4'>

@@ -10,7 +10,7 @@ import FoodCard from './FoodCard.jsx'
 import { useNavigate } from 'react-router-dom'
 
 function UserDashboard() {
-    const { currentCity, shopInMyCity, itemsInMyCity } = useSelector(state => state.user)
+    const { currentCity, shopInMyCity, itemsInMyCity, searchItems } = useSelector(state => state.user)
     const [showLeftCateButton, setShowLeftCateButton] = useState(false);
     const [showRightCateButton, setShowRightCateButton] = useState(false);
     const [showLeftShopButton, setShowLeftShopButton] = useState(false);
@@ -86,6 +86,17 @@ function UserDashboard() {
 
     return (
         <div className='w-screen min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-y-auto'>
+
+            {/* Div for search items */}
+            {searchItems && searchItems.length > 0 && (
+                <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-5 bg-white shadow-md rounded-2xl mt-4'>
+                    <h1 className='text-gray-900 text-2xl sm:text-3xl font-semibold border-b border-gray-200 pb-2'>Search Result</h1>
+                    {searchItems.map(item => (
+                        <FoodCard data={item} key={item._id} />
+                    ))}
+                </div>
+            )}
+
             <Nav />
 
             <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
@@ -121,8 +132,8 @@ function UserDashboard() {
                             </button>}
                         <div className='w-full flex overflow-x-auto gap-4 pb-2 ' ref={shopScrollRef}>
                             {shopInMyCity?.map((shop, ind) => {
-                                return <CategoryCard name={shop.name || "Name not defined"} image={shop.image} key={ind} onClick={()=>{
-                                   navigate(`/shop/${shop._id}`) 
+                                return <CategoryCard name={shop.name || "Name not defined"} image={shop.image} key={ind} onClick={() => {
+                                    navigate(`/shop/${shop._id}`)
                                 }} />
                             })}
                         </div>
