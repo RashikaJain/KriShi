@@ -25,7 +25,7 @@ import { io } from 'socket.io-client'
 import { useEffect } from 'react'
 import { setSocket } from './redux/userSlice.js'
 
-export const serverUrl = "http://localhost:8000"
+export const serverUrl = "https://krishi-backend-qj98.onrender.com"
 
 
 export default function App() {
