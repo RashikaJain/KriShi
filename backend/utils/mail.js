@@ -1,68 +1,41 @@
-import nodemailer from "nodemailer"
-import dotenv from "dotenv"
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config({
+  path: "./.env"
+});
 
 // Create transporter
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: "gmail",   // Gmail SMTP service
+  port: 465,          // Gmail secure SMTP port
+  secure: true,       // true for port 465
   auth: {
     user: process.env.EMAIL,
-    pass: process.env.PASS   // Gmail App Password (not normal password)
-  },
-  connectionTimeout: 10000
-})
-
+    pass: process.env.PASS
+  }
+});
 
 // Send OTP for password reset
 export const sendOtpMail = async (to, otp) => {
-  try {
-    await transporter.sendMail({
-      from: `"KriShi Support" <${process.env.EMAIL}>`,
-      to: to,
-      subject: "Reset Your Password",
-      html: `
-        <div style="font-family:Arial,sans-serif">
-          <h2>Password Reset Request</h2>
-          <p>Your OTP for password reset is:</p>
-          <h1 style="letter-spacing:4px">${otp}</h1>
-          <p>This OTP will expire in <b>5 minutes</b>.</p>
-          <p>If you did not request this, please ignore this email.</p>
-        </div>
-      `
-    })
+  await transporter.sendMail({
+    from: process.env.EMAIL,
+    to: to,
+    subject: "Reset your Password",
+    html: `<p>Your OTP for password reset is <b>${otp}</b>. It expires within 5 minutes.</p>`
+  });
+};
 
-    console.log("OTP mail sent to:", to)
-
-  } catch (error) {
-    console.error("Error sending OTP mail:", error)
-    throw new Error("Failed to send OTP mail")
-  }
-}
-
-
-// Send delivery confirmation OTP
+// Send OTP for delivery confirmation
 export const sendDeliveryOtpMail = async (user, otp) => {
-  try {
-    await transporter.sendMail({
-      from: `"KriShi Delivery" <${process.env.EMAIL}>`,
-      to: user.email,
-      subject: "Confirm Your Order Delivery",
-      html: `
-        <div style="font-family:Arial,sans-serif">
-          <h2>Delivery Confirmation</h2>
-          <p>Your OTP for confirming the delivery is:</p>
-          <h1 style="letter-spacing:4px">${otp}</h1>
-          <p>This OTP will expire in <b>5 minutes</b>.</p>
-          <p>Thank you for ordering with <b>KriShi</b>.</p>
-        </div>
-      `
-    })
-
-    console.log("Delivery OTP mail sent to:", user.email)
-
-  } catch (error) {
-    console.error("Error sending delivery OTP mail:", error)
-    throw new Error("Failed to send delivery OTP mail")
-  }
-}
+  await transporter.sendMail({
+    from: process.env.EMAIL,
+    to: user.email,
+    subject: "Confirm your order delivery",
+    html: `
+      <p>Your OTP for confirming the order delivery is <b>${otp}</b>. It expires within 5 minutes.</p>
+      <br/>
+      <p>We hope you will like your order.</p>
+    `
+  });
+};
